@@ -1,20 +1,20 @@
-#Get AWS account id
+# Get AWS account id
 data "aws_caller_identity" "current" {
 
 }
 
-#Create IAM User
-resource "aws_iam_user" "ci_wordpress" {
+# Create IAM User
+resource "aws_iam_user" "ci_opsmonkey" {
   name = "ci-${var.name}"
   tags = var.tags
 }
 
-#Create Key
+# Create Key
 resource "aws_iam_access_key" "aws_access_key" {
-  user = aws_iam_user.ci_wordpress.name
+  user = aws_iam_user.ci_opsmonkey.name
 
   depends_on = [
-    aws_iam_user.ci_wordpress
+    aws_iam_user.ci_opsmonkey
   ]
 }
 
@@ -61,22 +61,25 @@ data "aws_iam_policy_document" "user_policy" {
   }
 }
 
-#Create policy from document
+# Create policy from document
 resource "aws_iam_user_policy" "user_policy" {
   name = "${var.name}-policy"
-  user = aws_iam_user.ci_wordpress.name
+  user = aws_iam_user.ci_opsmonkey.name
 
   policy = data.aws_iam_policy_document.user_policy.json
 }
 
-#Create CircleCI Context
+
+
+
+# Create CircleCI Context
 resource "circleci_context" "ci_user" {
-  depends_on   = [aws_iam_user.ci_wordpress]
+  depends_on   = [aws_iam_user.ci_opsmonkey]
   name         = "${var.name}-${var.environment}"
   organization = var.organization
 }
 
-#Add the User to context
+#Add the ACCESS KEY to context
 resource "circleci_context_environment_variable" "aws_access_key_id" {
   depends_on   = [circleci_context.ci_user]
   variable     = "AWS_ACCESS_KEY_ID"
@@ -85,7 +88,7 @@ resource "circleci_context_environment_variable" "aws_access_key_id" {
   organization = var.organization
 }
 
-#Add the key to context
+#Add the SECRET to context
 resource "circleci_context_environment_variable" "aws_secret_access_key" {
   depends_on   = [circleci_context.ci_user]
   variable     = "AWS_SECRET_ACCESS_KEY"
@@ -94,7 +97,7 @@ resource "circleci_context_environment_variable" "aws_secret_access_key" {
   organization = var.organization
 }
 
-#Add the region to context
+#Add the REGION to context
 resource "circleci_context_environment_variable" "aws_default_region" {
   depends_on   = [circleci_context.ci_user]
   variable     = "AWS_DEFAULT_REGION"
@@ -103,7 +106,7 @@ resource "circleci_context_environment_variable" "aws_default_region" {
   organization = var.organization
 }
 
-#Add ECR URL to context
+#Add ECR_URL to context
 resource "circleci_context_environment_variable" "aws_ecr_account_url" {
   depends_on   = [circleci_context.ci_user]
   variable     = "AWS_ECR_ACCOUNT_URL"

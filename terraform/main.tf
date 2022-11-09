@@ -2,7 +2,7 @@ terraform {
     backend "s3" {
         bucket = "play-tfstate"
         key = "tf-circle-ecr-demo"
-        region = "us-west-2"
+        region = "us-east-1"
     }
     required_providers {
         circleci = {
@@ -13,7 +13,7 @@ terraform {
 }
 
 provider "aws" {
-    profile = "test"
+    profile = "terraform"
     region = var.region
 }
 
