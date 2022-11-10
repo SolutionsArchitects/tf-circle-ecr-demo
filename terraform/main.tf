@@ -7,7 +7,7 @@ terraform {
     required_providers {
         circleci = {
             source = "mrolla/circleci"
-            version = "0.4.0"
+            #version = "0.4.0"
         }
     }
 }
@@ -15,6 +15,8 @@ terraform {
 provider "aws" {
     profile = "terraform"
     region = var.region
+    #version = "3.7.1"
+    version = "< 4.0.0"
 }
 
 provider "circleci" {
